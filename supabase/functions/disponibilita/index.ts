@@ -117,7 +117,7 @@ Deno.serve(async (req) => {
 
   if (new URL(req.url).searchParams.get("format") === "json") {
     return new Response(JSON.stringify({ updatedAt, nights }), {
-      headers: { "Content-Type": "application/json; charset=utf-8" },
+      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
     });
   }
 
@@ -156,5 +156,7 @@ Deno.serve(async (req) => {
 <p class="sub">Per prenotare scrivici su WhatsApp: la disponibilità mostrata è indicativa e viene sempre riconfermata da noi al momento della richiesta.</p>
 </body></html>`;
 
-  return new Response(html, { headers: { "Content-Type": "text/html; charset=utf-8" } });
+  return new Response(html, {
+    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+  });
 });
