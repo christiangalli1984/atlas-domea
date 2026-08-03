@@ -124,39 +124,31 @@ Deno.serve(async (req) => {
   const freeRanges = groupRanges(nights, true);
   const busyRanges = groupRanges(nights, false);
 
-  const cells = nights.map((n) =>
-    `<div class="day ${n.free ? "free" : "busy"}" title="${fmt(n.date)}">` +
-    `<span>${n.date.slice(8)}</span><small>${new Date(`${n.date}T12:00:00`).toLocaleDateString("it-IT", { month: "short", timeZone: TZ })}</small></div>`
-  ).join("");
+  // Testo semplice: Supabase riscrive il content-type text/html in text/plain
+  // sui domini *.supabase.co (anti-phishing), quindi serviamo direttamente
+  // testo formattato — leggibile per le persone, perfetto per le AI.
+  const text = `DOMEA HOUSE & SPA — Calcata (VT)
+DISPONIBILITÀ DELLE NOTTI · prossimi ${DAYS_AHEAD} giorni
 
-  const html = `<!doctype html>
-<html lang="it"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Disponibilità — Domea House &amp; Spa</title>
-<style>
-  body{font-family:Georgia,serif;background:#faf7f2;color:#3a3430;max-width:720px;margin:0 auto;padding:24px}
-  h1{font-size:1.5rem;font-weight:normal} .sub{color:#8a7f74;font-size:.9rem}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:6px;margin:20px 0}
-  .day{border-radius:8px;padding:6px 2px;text-align:center;font-size:.95rem}
-  .day small{display:block;font-size:.6rem;text-transform:uppercase;letter-spacing:.05em}
-  .free{background:#e6efe2;color:#3e5c38} .busy{background:#efe2e2;color:#7c4a44;text-decoration:line-through}
-  .legend{font-size:.85rem;color:#8a7f74} .legend b{font-weight:normal;padding:2px 8px;border-radius:6px}
-  section{margin-top:28px} h2{font-size:1.05rem} li{margin:4px 0}
-</style></head><body>
-<h1>Domea House &amp; Spa — Disponibilità</h1>
-<p class="sub">Notti disponibili dei prossimi ${DAYS_AHEAD} giorni · aggiornato in tempo reale al ${updatedAt} (ora italiana)</p>
-<p class="legend"><b class="free">verde = notte libera</b> &nbsp; <b class="busy">rosso = notte occupata</b> · il giorno di check-out la casa si libera per nuovi arrivi</p>
-<div class="grid">${cells}</div>
-<section>
-<h2>Periodi liberi</h2>
-<ul>${freeRanges.map((r) => `<li>${r}</li>`).join("") || "<li>Nessuna notte libera nei prossimi 90 giorni.</li>"}</ul>
-<h2>Periodi occupati</h2>
-<ul>${busyRanges.map((r) => `<li>${r}</li>`).join("") || "<li>Tutte le notti sono libere nei prossimi 90 giorni.</li>"}</ul>
-</section>
-<p class="sub">Per prenotare scrivici su WhatsApp: la disponibilità mostrata è indicativa e viene sempre riconfermata da noi al momento della richiesta.</p>
-</body></html>`;
+Aggiornato in tempo reale al ${updatedAt} (ora italiana).
+Il giorno di check-out la casa si libera per nuovi arrivi.
 
-  return new Response(html, {
-    headers: { "Content-Type": "text/html; charset=utf-8", "Cache-Control": "no-store" },
+──────────────────────────────────────
+
+✅ PERIODI LIBERI
+
+${freeRanges.map((r) => `  • ${r}`).join("\n") || "  Nessuna notte libera nei prossimi 90 giorni."}
+
+❌ PERIODI OCCUPATI
+
+${busyRanges.map((r) => `  • ${r}`).join("\n") || "  Tutte le notti sono libere nei prossimi 90 giorni."}
+
+──────────────────────────────────────
+
+Per prenotare scrivici su WhatsApp: la disponibilità mostrata è
+indicativa e viene sempre riconfermata da noi al momento della richiesta.`;
+
+  return new Response(text, {
+    headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store" },
   });
 });
