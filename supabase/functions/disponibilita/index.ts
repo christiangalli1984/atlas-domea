@@ -4,7 +4,7 @@
 // ?format=json restituisce i dati grezzi.
 
 const ICS_URL = Deno.env.get("GOOGLE_ICS_URL") ?? "";
-const DAYS_AHEAD = 90;
+const DAYS_AHEAD = Number(Deno.env.get("DAYS_AHEAD") ?? "180");
 const TZ = "Europe/Rome";
 
 // Solo gli eventi il cui titolo contiene una di queste parole contano come prenotazioni:
@@ -117,7 +117,11 @@ Deno.serve(async (req) => {
 
   if (new URL(req.url).searchParams.get("format") === "json") {
     return new Response(JSON.stringify({ updatedAt, nights }), {
-      headers: { "Content-Type": "application/json; charset=utf-8", "Cache-Control": "no-store" },
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store",
+        "Access-Control-Allow-Origin": "*", // la pagina di prenotazione legge da qui
+      },
     });
   }
 
