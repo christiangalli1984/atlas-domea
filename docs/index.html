@@ -3,51 +3,45 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Prenota — Domea House &amp; Spa · Calcata</title>
-<meta name="description" content="Prenota il tuo soggiorno a Domea House & Spa, casa con Spa privata nella grotta a Calcata. Disponibilità in tempo reale.">
+<title>Disponibilità — Domea House &amp; Spa · Calcata</title>
+<meta name="description" content="Consulta la disponibilità di Domea House & Spa, casa con Spa privata nella grotta a Calcata. Aggiornata in tempo reale.">
 <style>
   :root {
     --bg: #faf7f2; --ink: #3a3430; --muted: #8a7f74;
     --green: #3e5c38; --green-bg: #e6efe2; --red: #7c4a44; --red-bg: #efe2e2;
     --accent: #5c7350; --card: #ffffff;
   }
-  * { box-sizing: border-box; }
-  body { font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--ink); margin: 0; line-height: 1.55; }
-  .wrap { max-width: 680px; margin: 0 auto; padding: 24px 16px 64px; }
-  header { text-align: center; padding: 28px 0 8px; }
-  h1 { font-weight: normal; font-size: 1.9rem; margin: 0; letter-spacing: .02em; }
-  .tagline { color: var(--muted); font-style: italic; margin-top: 6px; }
-  .sub { color: var(--muted); font-size: .9rem; }
-  .card { background: var(--card); border-radius: 16px; padding: 20px; margin-top: 20px; box-shadow: 0 1px 8px rgba(58,52,48,.07); }
-  h2 { font-weight: normal; font-size: 1.2rem; margin: 0 0 10px; }
-  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: .82rem; color: var(--muted); margin-bottom: 8px; }
-  .legend span { display: inline-flex; align-items: center; gap: 6px; }
-  .dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
-  .month { margin-top: 18px; }
-  .month h3 { font-weight: normal; font-size: 1rem; margin: 0 0 6px; text-transform: capitalize; }
-  .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: var(--bg); color: var(--ink); margin: 0; line-height: 1.5; }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 16px 14px 48px; }
+  header { text-align: center; padding: 18px 0 4px; }
+  h1 { font-weight: normal; font-size: 1.55rem; margin: 0; letter-spacing: .02em; }
+  .tagline { color: var(--muted); font-style: italic; margin: 4px 0 0; font-size: .95rem; }
+  .sub { color: var(--muted); font-size: .85rem; }
+  .card { background: var(--card); border-radius: 16px; padding: 16px; margin-top: 14px; box-shadow: 0 1px 8px rgba(58,52,48,.07); }
+  .notice { background: #f3ede3; border-radius: 14px; padding: 14px 16px; margin-top: 14px; font-size: .92rem; }
+  .notice b { font-weight: normal; color: var(--accent); }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: .8rem; color: var(--muted); margin: 2px 0 10px; justify-content: center; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .dot { width: 11px; height: 11px; border-radius: 4px; display: inline-block; }
+  .nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .nav h3 { font-weight: normal; font-size: 1.1rem; margin: 0; text-transform: capitalize; }
+  .nav button { width: 46px; height: 46px; border: 0; border-radius: 12px; background: var(--green-bg); color: var(--green); font-size: 1.4rem; cursor: pointer; font-family: inherit; }
+  .nav button:disabled { opacity: .3; cursor: default; }
+  .grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
   .dow { text-align: center; font-size: .68rem; color: var(--muted); text-transform: uppercase; padding: 2px 0; }
-  .day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 10px; font-size: .95rem; border: 1px solid transparent; background: var(--green-bg); color: var(--green); cursor: pointer; user-select: none; }
+  .day { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; border-radius: 12px; font-size: 1.05rem; background: var(--green-bg); color: var(--green); cursor: pointer; user-select: none; }
   .day.empty { background: transparent; cursor: default; }
-  .day.past { background: transparent; color: #cfc8bf; cursor: default; }
   .day.busy { background: var(--red-bg); color: var(--red); text-decoration: line-through; cursor: not-allowed; }
   .day.sel { background: var(--accent); color: #fff; }
   .day.inrange { background: #cddcc5; color: var(--green); }
-  .pick { margin-top: 14px; font-size: .95rem; min-height: 1.4em; }
+  .pick { margin-top: 12px; font-size: .95rem; min-height: 1.4em; text-align: center; }
   .pick b { font-weight: normal; color: var(--accent); }
-  form { display: grid; gap: 12px; margin-top: 8px; }
-  label { font-size: .85rem; color: var(--muted); display: block; margin-bottom: 4px; }
-  input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid #ddd5cb; border-radius: 10px; background: #fffdfa; font-family: inherit; font-size: 1rem; color: var(--ink); }
-  textarea { resize: vertical; min-height: 70px; }
-  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  button { padding: 14px; border: 0; border-radius: 12px; background: var(--accent); color: #fff; font-family: inherit; font-size: 1.05rem; cursor: pointer; }
-  button:disabled { background: #b8b1a6; cursor: not-allowed; }
-  .ok, .err { border-radius: 12px; padding: 14px 16px; margin-top: 14px; display: none; }
-  .ok { background: var(--green-bg); color: var(--green); }
-  .err { background: var(--red-bg); color: var(--red); }
-  .wa { display: inline-block; margin-top: 10px; padding: 10px 16px; border-radius: 10px; background: #25d366; color: #fff; text-decoration: none; }
-  footer { text-align: center; color: var(--muted); font-size: .85rem; margin-top: 36px; font-style: italic; }
-  .loading { text-align: center; color: var(--muted); padding: 30px 0; }
+  .btn { display: block; width: 100%; text-align: center; margin-top: 12px; padding: 15px; border: 0; border-radius: 12px; font-family: inherit; font-size: 1.05rem; text-decoration: none; cursor: pointer; }
+  .wa { background: #25d366; color: #fff; }
+  .pay { background: var(--accent); color: #fff; }
+  footer { text-align: center; color: var(--muted); font-size: .82rem; margin-top: 30px; font-style: italic; }
+  .loading { text-align: center; color: var(--muted); padding: 26px 0; }
 </style>
 </head>
 <body>
@@ -55,51 +49,28 @@
   <header>
     <h1>Domea House &amp; Spa</h1>
     <p class="tagline">La tua casa off line (con Wi-Fi) · Calcata</p>
-    <p class="sub">Casa intera con Spa privata nella grotta, vista sulla Valle del Treja</p>
   </header>
 
+  <div class="notice">
+    📅 <b>Calendario di sola consultazione.</b> Le date che scegli vanno poi indicate nella chat WhatsApp: il nostro staff le confermerà il prima possibile dopo la ricezione del pagamento.
+  </div>
+
   <div class="card">
-    <h2>Scegli le tue notti</h2>
+    <div class="nav">
+      <button id="prev" aria-label="Mese precedente">‹</button>
+      <h3 id="monthTitle">&nbsp;</h3>
+      <button id="next" aria-label="Mese successivo">›</button>
+    </div>
     <div class="legend">
       <span><i class="dot" style="background:var(--green-bg)"></i> libero</span>
       <span><i class="dot" style="background:var(--red-bg)"></i> occupato</span>
-      <span><i class="dot" style="background:var(--accent)"></i> selezionato</span>
+      <span><i class="dot" style="background:var(--accent)"></i> tua scelta</span>
     </div>
-    <p class="sub" id="updated"></p>
     <div id="calendar"><p class="loading">Carico la disponibilità in tempo reale…</p></div>
-    <p class="pick" id="pick">Tocca il giorno di arrivo, poi quello di partenza.</p>
-  </div>
-
-  <div class="card" id="formCard" style="display:none">
-    <h2>Richiedi la prenotazione</h2>
-    <form id="form">
-      <div>
-        <label for="name">Nome e cognome *</label>
-        <input id="name" required minlength="2" autocomplete="name">
-      </div>
-      <div class="row2">
-        <div>
-          <label for="phone">Telefono (WhatsApp) *</label>
-          <input id="phone" required minlength="6" type="tel" autocomplete="tel" placeholder="+39 …">
-        </div>
-        <div>
-          <label for="guests">Ospiti</label>
-          <select id="guests"><option>1</option><option selected>2</option><option>3</option><option>4</option></select>
-        </div>
-      </div>
-      <div>
-        <label for="email">Email (facoltativa)</label>
-        <input id="email" type="email" autocomplete="email">
-      </div>
-      <div>
-        <label for="note">Note o richieste particolari</label>
-        <textarea id="note" placeholder="Occasioni speciali, orario di arrivo, domande…"></textarea>
-      </div>
-      <button id="submit" type="submit">Invia richiesta di prenotazione</button>
-      <p class="sub" style="margin:4px 0 0">Nessun pagamento online: ti confermiamo noi disponibilità e dettagli su WhatsApp, di solito entro poche ore. La richiesta non è vincolante.</p>
-    </form>
-    <div class="ok" id="okBox"></div>
-    <div class="err" id="errBox"></div>
+    <p class="pick" id="pick">Tocca arrivo e partenza per comporre il messaggio.</p>
+    <a class="btn wa" id="waBtn" style="display:none">Invia le date su WhatsApp</a>
+    <a class="btn pay" id="payBtn" style="display:none" target="_blank" rel="noopener">Vai al pagamento</a>
+    <p class="sub" id="updated" style="text-align:center"></p>
   </div>
 
   <footer>«Se sei off line vuol dire che stai vivendo.»<br>Via Rupe Maggiore 23, Calcata Vecchia (VT)</footer>
@@ -107,10 +78,13 @@
 
 <script>
 const API = "https://uhdtgmuydnttsicsihyw.supabase.co/functions/v1";
-const WHATSAPP_NUMBER = ""; // es. "393331234567" — se impostato, dopo l'invio appare il bottone WhatsApp
+const WHATSAPP_NUMBER = ""; // es. "393331234567" — numero WhatsApp di Domea
+const PAYMENT_LINK = "";    // link di pagamento fornito dallo staff — se impostato appare il tasto
 
-let nights = [];            // [{date:"YYYY-MM-DD", free:bool}]
+let nights = [];                 // [{date:"YYYY-MM-DD", free:bool}]
 const byDate = new Map();
+let monthKeys = [];              // ["2026-08", ...]
+let current = 0;
 let checkin = null, checkout = null;
 
 const $ = (id) => document.getElementById(id);
@@ -122,7 +96,8 @@ async function load() {
     const data = await res.json();
     nights = data.nights;
     nights.forEach((n) => byDate.set(n.date, n.free));
-    $("updated").textContent = "Disponibilità aggiornata in tempo reale · " + data.updatedAt;
+    monthKeys = [...new Set(nights.map((n) => n.date.slice(0, 7)))].sort();
+    $("updated").textContent = "Aggiornato in tempo reale · " + data.updatedAt;
     render();
   } catch (e) {
     $("calendar").innerHTML = '<p class="loading">Calendario momentaneamente non disponibile. Riprova tra poco o scrivici su WhatsApp.</p>';
@@ -130,44 +105,37 @@ async function load() {
 }
 
 function render() {
+  const key = monthKeys[current];
+  const list = nights.filter((n) => n.date.startsWith(key));
+  $("monthTitle").textContent = new Date(key + "-01T12:00:00").toLocaleDateString("it-IT", { month: "long", year: "numeric" });
+  $("prev").disabled = current === 0;
+  $("next").disabled = current === monthKeys.length - 1;
+
+  const grid = document.createElement("div");
+  grid.className = "grid";
+  ["lun","mar","mer","gio","ven","sab","dom"].forEach((d) => {
+    const el = document.createElement("div"); el.className = "dow"; el.textContent = d; grid.appendChild(el);
+  });
+  const firstDow = (new Date(list[0].date + "T12:00:00").getDay() + 6) % 7; // lun=0
+  for (let i = 0; i < firstDow; i++) {
+    const el = document.createElement("div"); el.className = "day empty"; grid.appendChild(el);
+  }
+  list.forEach((n) => {
+    const el = document.createElement("div");
+    el.className = "day " + (n.free ? "free" : "busy");
+    el.textContent = Number(n.date.slice(8, 10));
+    el.dataset.date = n.date;
+    el.addEventListener("click", () => onDay(n));
+    grid.appendChild(el);
+  });
   const cal = $("calendar");
   cal.innerHTML = "";
-  const months = {};
-  nights.forEach((n) => {
-    const key = n.date.slice(0, 7);
-    (months[key] = months[key] || []).push(n);
-  });
-  const dows = ["lun","mar","mer","gio","ven","sab","dom"];
-  for (const key of Object.keys(months).sort()) {
-    const list = months[key];
-    const mDiv = document.createElement("div");
-    mDiv.className = "month";
-    const title = new Date(key + "-01T12:00:00").toLocaleDateString("it-IT", { month: "long", year: "numeric" });
-    mDiv.innerHTML = "<h3>" + title + "</h3>";
-    const grid = document.createElement("div");
-    grid.className = "grid";
-    dows.forEach((d) => { const el = document.createElement("div"); el.className = "dow"; el.textContent = d; grid.appendChild(el); });
-    const firstDow = (new Date(list[0].date + "T12:00:00").getDay() + 6) % 7; // lun=0
-    const firstDayNum = Number(list[0].date.slice(8, 10));
-    // celle vuote per allineare il primo giorno mostrato al giorno della settimana
-    for (let i = 0; i < firstDow; i++) grid.appendChild(cell(null));
-    if (firstDayNum > 1 && firstDow === 0) { /* mese parziale che inizia di lunedì: ok */ }
-    list.forEach((n) => grid.appendChild(cell(n)));
-    mDiv.appendChild(grid);
-    cal.appendChild(mDiv);
-  }
+  cal.appendChild(grid);
   paint();
 }
 
-function cell(n) {
-  const el = document.createElement("div");
-  if (!n) { el.className = "day empty"; return el; }
-  el.className = "day " + (n.free ? "free" : "busy");
-  el.textContent = Number(n.date.slice(8, 10));
-  el.dataset.date = n.date;
-  el.addEventListener("click", () => onDay(n));
-  return el;
-}
+$("prev").addEventListener("click", () => { if (current > 0) { current--; render(); } });
+$("next").addEventListener("click", () => { if (current < monthKeys.length - 1) { current++; render(); } });
 
 function rangeFree(a, b) { // notti [a, b) tutte libere
   const d = new Date(a + "T12:00:00");
@@ -185,7 +153,6 @@ function onDay(n) {
     if (!n.free) return;
     checkin = n.date; checkout = null;
   } else {
-    // n.date > checkin: valido come check-out se tutte le notti prima sono libere
     if (rangeFree(checkin, n.date)) checkout = n.date;
     else if (n.free) { checkin = n.date; checkout = null; }
     else return;
@@ -201,55 +168,25 @@ function paint() {
     else if (checkin && checkout && d > checkin && d < checkout) el.classList.add("inrange");
   });
   const pick = $("pick");
+  const waBtn = $("waBtn");
   if (checkin && checkout) {
     const numNights = Math.round((new Date(checkout) - new Date(checkin)) / 86400000);
     pick.innerHTML = "Dal <b>" + fmtLong(checkin) + "</b> al <b>" + fmtLong(checkout) + "</b> · " + numNights + (numNights === 1 ? " notte" : " notti");
-    $("formCard").style.display = "block";
-    $("formCard").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (WHATSAPP_NUMBER) {
+      const txt = encodeURIComponent("Ciao! Ho visto il calendario: vorrei prenotare dal " + fmtLong(checkin) + " al " + fmtLong(checkout) + " (" + numNights + (numNights === 1 ? " notte" : " notti") + "). È possibile?");
+      waBtn.href = "https://wa.me/" + WHATSAPP_NUMBER + "?text=" + txt;
+      waBtn.style.display = "block";
+    }
   } else if (checkin) {
     pick.innerHTML = "Arrivo <b>" + fmtLong(checkin) + "</b> — ora tocca il giorno di partenza.";
-    $("formCard").style.display = "none";
+    waBtn.style.display = "none";
   } else {
-    pick.textContent = "Tocca il giorno di arrivo, poi quello di partenza.";
-    $("formCard").style.display = "none";
+    pick.textContent = "Tocca arrivo e partenza per comporre il messaggio.";
+    waBtn.style.display = "none";
   }
 }
 
-$("form").addEventListener("submit", async (ev) => {
-  ev.preventDefault();
-  const btn = $("submit");
-  btn.disabled = true; btn.textContent = "Invio in corso…";
-  $("okBox").style.display = $("errBox").style.display = "none";
-  try {
-    const res = await fetch(API + "/prenota", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: $("name").value, phone: $("phone").value, email: $("email").value,
-        guests: Number($("guests").value), checkin, checkout, note: $("note").value,
-      }),
-    });
-    const data = await res.json();
-    if (res.ok && data.ok) {
-      $("form").style.display = "none";
-      let msg = "<b>Richiesta inviata!</b> Ti confermiamo disponibilità e dettagli su WhatsApp, di solito entro poche ore. Grazie! 🌿";
-      if (WHATSAPP_NUMBER) {
-        const txt = encodeURIComponent("Ciao! Ho appena richiesto una prenotazione dal " + checkin + " al " + checkout + " a nome " + $("name").value);
-        msg += '<br><a class="wa" href="https://wa.me/' + WHATSAPP_NUMBER + "?text=" + txt + '">Scrivici subito su WhatsApp</a>';
-      }
-      $("okBox").innerHTML = msg; $("okBox").style.display = "block";
-    } else if (data.error === "not_available") {
-      showErr("Ops: una o più notti scelte sono state appena prenotate. Ricarica la pagina e scegli altre date.");
-    } else {
-      showErr("Qualcosa non ha funzionato (" + (data.error || res.status) + "). Riprova o scrivici su WhatsApp.");
-    }
-  } catch {
-    showErr("Connessione non riuscita. Riprova tra poco.");
-  }
-  btn.disabled = false; btn.textContent = "Invia richiesta di prenotazione";
-});
-
-function showErr(msg) { $("errBox").textContent = msg; $("errBox").style.display = "block"; }
+if (PAYMENT_LINK) { $("payBtn").href = PAYMENT_LINK; $("payBtn").style.display = "block"; }
 
 load();
 </script>
