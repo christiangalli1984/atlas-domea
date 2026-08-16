@@ -1,0 +1,17 @@
+project_id = "uhdtgmuydnttsicsihyw"
+
+# Tutte le funzioni sono pubbliche: la pagina, Revolut e Meta le chiamano senza
+# un token Supabase. Il CLI di default attiverebbe la verifica JWT al deploy,
+# rompendole: qui la teniamo esplicitamente disattivata.
+
+[functions.disponibilita]
+verify_jwt = false
+
+[functions.paga]
+verify_jwt = false
+
+[functions.prenota]
+verify_jwt = false
+
+[functions.whatsapp-webhook]
+verify_jwt = false
