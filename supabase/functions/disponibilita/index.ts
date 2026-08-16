@@ -21,11 +21,82 @@ const TZ = "Europe/Rome";
 const BOOKING_KEYWORDS = (Deno.env.get("BOOKING_KEYWORDS") ?? "stay at,prenotazione,domea")
   .split(",").map((k) => k.trim().toLowerCase()).filter(Boolean);
 
+// L'export iCal segreto di Google ogni tanto si appende o rifiuta la richiesta
+// (rate-limit): timeout duro e UN solo ritentativo, per non aumentare la pressione.
+const FETCH_TIMEOUT_MS = Number(Deno.env.get("FETCH_TIMEOUT_MS") ?? "5000");
+const FETCH_RETRIES = Number(Deno.env.get("FETCH_RETRIES") ?? "1");
+
+// Credenziali del progetto, iniettate automaticamente nelle Edge Functions:
+// servono per la cache persistente dello snapshot su Postgres.
+const SB_URL = Deno.env.get("SUPABASE_URL") ?? "";
+const SB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+
 type Range = { start: string; end: string }; // date ISO (YYYY-MM-DD), end esclusiva
 type IcsEvent = Range & { summary: string; allDay: boolean };
 
 // Regola con cui un feed decide quali eventi contano come prenotazioni.
 type FeedMode = "keywords" | "allday" | "all";
+
+// Cache dell'ultimo set di prenotazioni letto con successo. Due livelli:
+// in memoria (worker caldo) e su Postgres (tabella dispo_cache, sopravvive ai
+// worker freddi). Se il fetch iCal fallisce riusiamo l'ultimo dato buono invece
+// di restituire 502. Salviamo i range grezzi, non le notti: così le date
+// restano sempre relative a oggi.
+let lastGoodRanges: Range[] | null = null;
+let lastGoodAt: string | null = null;
+
+async function saveSnapshot(ranges: Range[], at: string): Promise<void> {
+  if (!SB_URL || !SB_KEY) return;
+  try {
+    await fetch(`${SB_URL}/rest/v1/dispo_cache`, {
+      method: "POST",
+      headers: {
+        apikey: SB_KEY,
+        Authorization: `Bearer ${SB_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates",
+      },
+      body: JSON.stringify({ id: 1, ranges, updated_at: at }),
+    });
+  } catch (e) {
+    console.error("saveSnapshot:", e); // best effort: non blocca la risposta
+  }
+}
+
+async function loadSnapshot(): Promise<{ ranges: Range[]; at: string } | null> {
+  if (!SB_URL || !SB_KEY) return null;
+  try {
+    const res = await fetch(`${SB_URL}/rest/v1/dispo_cache?id=eq.1&select=ranges,updated_at`, {
+      headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` },
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    if (!rows?.[0]?.ranges) return null;
+    return { ranges: rows[0].ranges, at: rows[0].updated_at };
+  } catch (e) {
+    console.error("loadSnapshot:", e);
+    return null;
+  }
+}
+
+// Fetch con timeout duro + ritentativi: un singolo hiccup di Google si auto-guarisce.
+async function fetchText(url: string): Promise<string> {
+  let lastErr: unknown;
+  for (let attempt = 0; attempt <= FETCH_RETRIES; attempt++) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), FETCH_TIMEOUT_MS);
+    try {
+      const res = await fetch(url, { headers: { "Cache-Control": "no-cache" }, signal: ctrl.signal });
+      if (!res.ok) throw new Error(`ICS fetch ${res.status}: ${url.slice(0, 60)}`);
+      return await res.text();
+    } catch (e) {
+      lastErr = e;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+  throw lastErr;
+}
 
 function toISODate(d: Date): string {
   return d.toLocaleDateString("sv-SE", { timeZone: TZ });
@@ -129,23 +200,34 @@ Deno.serve(async (req) => {
     return new Response("Configurazione in corso: nessun calendario configurato.", { status: 503 });
   }
 
-  // Se anche un solo feed non risponde ci fermiamo: meglio nessuna risposta
-  // che mostrare come libera una notte prenotata sul feed mancante.
+  // Se anche un solo feed non risponde proviamo a riusare l'ultimo dato buono
+  // (prima dalla memoria del worker, poi dalla cache su Postgres): meglio uno
+  // snapshot recente che un errore. Solo senza alcuno snapshot → 502.
   let ranges: Range[];
+  let stale = false;
   try {
-    const texts = await Promise.all(feeds.map(async (f) => {
-      const res = await fetch(f.url, { headers: { "Cache-Control": "no-cache" } });
-      if (!res.ok) throw new Error(`ICS fetch ${res.status}: ${f.url.slice(0, 60)}`);
-      return res.text();
-    }));
+    const texts = await Promise.all(feeds.map((f) => fetchText(f.url)));
     ranges = feeds.flatMap((f, i) => parseICS(texts[i]).filter((ev) => isBooking(ev, f.mode)));
+    lastGoodRanges = ranges;
+    lastGoodAt = new Date().toISOString();
+    await saveSnapshot(ranges, lastGoodAt);
   } catch (e) {
     console.error(e);
-    return new Response("Calendario momentaneamente non raggiungibile.", { status: 502 });
+    if (!lastGoodRanges) {
+      const snap = await loadSnapshot();
+      if (snap) { lastGoodRanges = snap.ranges; lastGoodAt = snap.at; }
+    }
+    if (!lastGoodRanges) {
+      return new Response("Calendario momentaneamente non raggiungibile.", { status: 502 });
+    }
+    ranges = lastGoodRanges;
+    stale = true;
   }
 
   const nights = computeNights(ranges);
-  const updatedAt = new Date().toLocaleString("it-IT", { timeZone: TZ });
+  // Se serviamo dalla cache, mostriamo l'orario dell'ultima lettura riuscita.
+  const updatedAt = (stale && lastGoodAt ? new Date(lastGoodAt) : new Date())
+    .toLocaleString("it-IT", { timeZone: TZ });
 
   if (new URL(req.url).searchParams.get("format") === "json") {
     return new Response(JSON.stringify({ updatedAt, nights }), {
